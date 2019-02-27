@@ -57,9 +57,6 @@ gyro_err_t gyro_init(gyro_t* gyro){
     data_wr[0] = GYRO_REGISTER_CTRL_REG1;
     data_wr[1] = 0x0E;
     ret = i2c_utils_write(gyro->i2c, data_wr, 2);
-
-    const TickType_t xDelay = 100 / portTICK_PERIOD_MS;
-    vTaskDelay(xDelay);
     
     free(data_rd);
     free(data_wr);
@@ -83,7 +80,7 @@ gyro_err_t gyro_update(gyro_t *gyro){
     if(ret != I2C_SUCCESS)
         return GYRO_BUS_FAIL;
 
-    uint8_t status = data_rd[0];
+    //uint8_t status = data_rd[0];
     uint8_t xhi = data_rd[1];
     uint8_t xlo = data_rd[2];
     uint8_t yhi = data_rd[3];
