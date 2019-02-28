@@ -23,6 +23,10 @@ static void gyro_test_task(void *arg)
     g_ret = gyro_init(gyro);
     vTaskDelay(init_wait);
 
+    magn_err_t m_ret;
+    magn_t* magn = (magn_t*)malloc(sizeof(magn_t));
+    m_ret = magn_init(magn);
+
     accel_err_t a_ret;
     accel_t* accel = (accel_t*)malloc(sizeof(accel_t));
     a_ret = accel_init(accel);
@@ -34,10 +38,6 @@ static void gyro_test_task(void *arg)
             printf("Accel init failed with %d\n", a_ret);
         }
     }
-
-    magn_err_t m_ret;
-    magn_t* magn = (magn_t*)malloc(sizeof(magn_t));
-    m_ret = magn_init(magn);
 
     /* Print and update gyro mainloop */
     while(1){

@@ -38,6 +38,11 @@
 #define NACK_VAL 0x1                            /*!< I2C nack value */
 
 /*!
+* The driver should be installed ONCE, so do no reinstall if a new device is added
+*/
+//static int I2C_DRIVER_INSTALLED = 0;
+
+/*!
 *  Simple enum to select master/slave
 */
 typedef enum {

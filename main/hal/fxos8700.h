@@ -10,6 +10,7 @@
 #define FXOS8700_H
 
 #include "i2c_utils.h"
+#include "time_utils.h"
 
 /** 7-bit I2C address for this sensor */
 #define FXOS8700_ADDRESS           (0x1F)     // 0011111
@@ -20,6 +21,7 @@
 
 #define ACCEL_BUFF_SIZE 13
 #define MAGN_BUFF_SIZE 13
+#define FXOS_BUFF_SIZE 13
 
 #define SENSORS_GRAVITY_EARTH (9.80665F) /**< Earth's gravity in m/s^2 */
 #define SENSORS_GRAVITY_STANDARD (SENSORS_GRAVITY_EARTH)
@@ -81,19 +83,26 @@ typedef struct raw_float_data_s {
       float z;    /**< Raw int16_t value for the z axis */
 } raw_float_data_t;
 
-typedef struct accel_s {
-    raw_int_data_t raw;
-    raw_float_data_t converted;
+typedef struct fxos8700_s {
+    raw_int_data_t a_raw;
+    raw_float_data_t a_converted;
+    raw_int_data_t m_raw;
+    raw_float_data_t m_converted;
     fxos8700AccelRange_t range;
     int32_t id;
     i2c_peripheral_t i2c;
+} fxos8700_t;
+
+typedef struct accel_s {
+    fxos8700_t* fxos;
+    raw_int_data_t raw;
+    raw_float_data_t converted;
 } accel_t;
 
 typedef struct magn_s {
+    fxos8700_t* fxos;
     raw_int_data_t raw;
     raw_float_data_t converted;
-    int32_t id;
-    i2c_peripheral_t i2c;
 } magn_t;
 
 typedef enum {
@@ -108,6 +117,15 @@ typedef enum {
     MAGN_ID_FAIL = 0x2,
 } magn_err_t;
 
+typedef enum {
+    FXOS8700_SUCCESS = 0x0,
+    FXOS8700_BUS_FAIL = 0x1,
+    FXOS8700_ID_FAIL = 0x2,
+} fxos8700_err_t;
+
+static fxos8700_t* fxos8700; 
+static timer_hal_t* fxos_timer;
+
 accel_err_t accel_init(accel_t *accel);
 
 accel_err_t accel_update(accel_t *accel);
@@ -115,5 +133,9 @@ accel_err_t accel_update(accel_t *accel);
 magn_err_t magn_init(magn_t *magn);
 
 magn_err_t magn_update(magn_t *magn);
+
+static fxos8700_err_t fxos8700_init(fxos8700_t *fxos);
+
+static fxos8700_err_t fxos8700_update(fxos8700_t *fxos);
 
 #endif
