@@ -20,13 +20,12 @@ static void gyro_test_task(void *arg)
     /* Create generic gyroscope */
     gyro_err_t g_ret;
     gyro_t* gyro = (gyro_t*)malloc(sizeof(gyro_t));
-    //g_ret = gyro_init(gyro);
-    //vTaskDelay(init_wait);
+    g_ret = gyro_init(gyro);
+    vTaskDelay(init_wait);
 
     accel_err_t a_ret;
     accel_t* accel = (accel_t*)malloc(sizeof(accel_t));
     a_ret = accel_init(accel);
-    vTaskDelay(init_wait);
 
     if(a_ret != ACCEL_SUCCESS)
     {
@@ -38,15 +37,17 @@ static void gyro_test_task(void *arg)
 
     magn_err_t m_ret;
     magn_t* magn = (magn_t*)malloc(sizeof(magn_t));
-    //m_ret = magn_init(magn);
+    m_ret = magn_init(magn);
 
     /* Print and update gyro mainloop */
     while(1){
         vTaskDelay(sample_period);
-        printf("Data: %d %d %d \n", accel->raw.x, accel->raw.y, accel->raw.z);
-        //gyro_update(gyro);
+        printf("%2.3f %2.3f %2.3f ", accel->converted.x, accel->converted.y, accel->converted.z);
+        printf("%2.3f %2.3f %2.3f ", gyro->converted.x, gyro->converted.y, gyro->converted.z);
+        printf("%2.3f %2.3f %2.3f \n", magn->converted.x, magn->converted.y, magn->converted.z);
+        gyro_update(gyro);
         accel_update(accel);
-        //magn_update(magn);
+        magn_update(magn);
     }
     
     free(gyro);

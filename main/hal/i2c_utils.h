@@ -74,6 +74,7 @@ typedef enum {
     I2C_FAIL = 0x5,
 } i2c_err_t;
 
+
 /*!
 * @brief setup an i2c peripheral before use in master mode
 * @param i2c_setup a struct containing the necessary setup parameters

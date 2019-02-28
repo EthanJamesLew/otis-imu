@@ -1,5 +1,7 @@
 #include "i2c_utils.h"
 
+static int I2C_DRIVER_INSTALLED = 0;
+
 /*!
 *  The i2c_setup for a ESP32 i2c peripheral works as follows
 *   1. Setup a i2c_config_t struct
@@ -11,7 +13,7 @@
 */
 i2c_err_t i2c_utils_setup(i2c_peripheral_t i2c_setup)
 {
-    esp_err_t ret;
+    esp_err_t ret = ESP_OK;
 
     /* Populate a i2c_config_t type*/
     i2c_config_t conf_dev;
@@ -27,9 +29,12 @@ i2c_err_t i2c_utils_setup(i2c_peripheral_t i2c_setup)
         conf_dev.slave.addr_10bit_en = 0;
         conf_dev.slave.slave_addr = i2c_setup.addr;
         i2c_param_config(i2c_port, &conf_dev);
-        ret =  i2c_driver_install(i2c_port, conf_dev.mode,
-                                i2c_setup.rx_buff_len,
-                                i2c_setup.tx_buff_len, 0);
+        if (I2C_DRIVER_INSTALLED == 0){
+            ret =  i2c_driver_install(i2c_port, conf_dev.mode,
+                                    i2c_setup.rx_buff_len,
+                                    i2c_setup.tx_buff_len, 0);
+            I2C_DRIVER_INSTALLED = 1;
+        }
     } else {
         int i2c_port = I2C_MASTER_NUM;
         conf_dev.sda_io_num = I2C_MASTER_SDA_IO;
@@ -38,9 +43,12 @@ i2c_err_t i2c_utils_setup(i2c_peripheral_t i2c_setup)
         conf_dev.master.clk_speed = i2c_setup.clk_speed;
 
         i2c_param_config(i2c_port, &conf_dev);
-        ret =  i2c_driver_install(i2c_port, conf_dev.mode,
-                                i2c_setup.rx_buff_len,
-                                i2c_setup.tx_buff_len, 0);
+        if (I2C_DRIVER_INSTALLED == 0){
+            ret =  i2c_driver_install(i2c_port, conf_dev.mode,
+                                    i2c_setup.rx_buff_len,
+                                    i2c_setup.tx_buff_len, 0);
+            I2C_DRIVER_INSTALLED = 1;
+        }
     }
 
     /* Interpret Error Results */

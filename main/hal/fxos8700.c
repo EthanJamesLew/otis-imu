@@ -38,29 +38,15 @@ accel_err_t accel_init(accel_t *accel){
     accel->raw.z = 0;
 
     /* Check device ID */
-    ret = i2c_utils_read(accel->i2c, FXOS8700_REGISTER_WHO_AM_I, data_rd, 8);
+    ret = i2c_utils_read(accel->i2c, FXOS8700_REGISTER_WHO_AM_I, data_rd, 1);
     if(data_rd[0] != FXOS8700_ID) {
-        while(1){
-            printf("%d\n", data_rd[0] );
-        }
         return ACCEL_ID_FAIL;
-
-
     }
+
     /* Place 0x00 into accel CTRL register to place device into standby*/
     data_wr[0] = FXOS8700_REGISTER_CTRL_REG1;
     data_wr[1] = 0x00;
     /* Set to standby mode (required to make changes to this register) */
-    ret = i2c_utils_write(accel->i2c, data_wr, 2);
-
-    /* Configure the magnetometer */
-    /* Hybrid Mode, Over Sampling Rate = 16 */
-    data_wr[0] = FXOS8700_REGISTER_MCTRL_REG1;
-    data_wr[1] = 0x1F;
-    ret = i2c_utils_write(accel->i2c, data_wr, 2);
-    /* Jump to reg 0x33 after reading 0x06 */
-    data_wr[0] = FXOS8700_REGISTER_MCTRL_REG2;
-    data_wr[1] = 0x20;
     ret = i2c_utils_write(accel->i2c, data_wr, 2);
     
     /* Configure the accelerometer */
@@ -85,14 +71,24 @@ accel_err_t accel_init(accel_t *accel){
     }
 
     /* High resolution */
-    //data_wr[0] = FXOS8700_REGISTER_CTRL_REG2;
-    //data_wr[1] = 0x02;
-    //ret = i2c_utils_write(accel->i2c, data_wr, 2);
+    data_wr[0] = FXOS8700_REGISTER_CTRL_REG2;
+    data_wr[1] = 0x02;
+    ret = i2c_utils_write(accel->i2c, data_wr, 2);
 
     /* Active, Normal Mode, Low Noise, 100Hz in Hybrid Mode */
     data_wr[0] = FXOS8700_REGISTER_CTRL_REG1;
     //data_wr[1] = 0x0D;
     data_wr[1] = 0x15;
+    ret = i2c_utils_write(accel->i2c, data_wr, 2);
+
+     /* Configure the magnetometer */
+    /* Hybrid Mode, Over Sampling Rate = 16 */
+    data_wr[0] = FXOS8700_REGISTER_MCTRL_REG1;
+    data_wr[1] = 0x1F;
+    ret = i2c_utils_write(accel->i2c, data_wr, 2);
+    /* Jump to reg 0x33 after reading 0x06 */
+    data_wr[0] = FXOS8700_REGISTER_MCTRL_REG2;
+    data_wr[1] = 0x20;
     ret = i2c_utils_write(accel->i2c, data_wr, 2);
 
 
@@ -112,8 +108,7 @@ accel_err_t accel_update(accel_t *accel){
     accel->raw.y = 0;
     accel->raw.z = 0;
 
-
-    ret = i2c_utils_read(accel->i2c, FXOS8700_REGISTER_STATUS | 0x80, data_rd, 13);
+    ret = i2c_utils_read(accel->i2c, FXOS8700_REGISTER_STATUS, data_rd, 13);
     if(ret != I2C_SUCCESS)
         return ACCEL_BUS_FAIL;
 
@@ -222,7 +217,7 @@ magn_err_t magn_update(magn_t *magn){
     magn->raw.y = 0;
     magn->raw.z = 0;
 
-    i2c_utils_read(magn->i2c, FXOS8700_REGISTER_STATUS | 0x80, data_rd, 13);
+    i2c_utils_read(magn->i2c, FXOS8700_REGISTER_STATUS, data_rd, 13);
 
     uint8_t mxhi = data_rd[7];
     uint8_t mxlo = data_rd[8];
