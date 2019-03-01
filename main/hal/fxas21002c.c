@@ -1,33 +1,37 @@
 #include "fxas21002c.h"
 
-gyro_err_t gyro_init(gyro_t* gyro){
+gyro_err_t gyro_init(gyro_t **gyro){
+    if(gyro != NULL){
+        *gyro = (gyro_t*)malloc(sizeof(gyro_t));
+    }
+
     /* Setup the I2C device */
     i2c_err_t ret;
     uint8_t* data_rd = (uint8_t*)malloc(sizeof(uint8_t)*GYRO_BUFF_SIZE);
     uint8_t* data_wr = (uint8_t*)malloc(sizeof(uint8_t)*GYRO_BUFF_SIZE);
-    gyro->i2c.addr = FXAS21002C_ADDRESS;
-    gyro->i2c.clk_speed = I2C_MASTER_FAST_FREQ_HZ;
-    gyro->i2c.mode =I2C_MODE_TYPE_MASTER;
-    gyro->i2c.tx_buff_len = GYRO_BUFF_SIZE;
-    gyro->i2c.rx_buff_len = GYRO_BUFF_SIZE;
-    ret = i2c_utils_setup(gyro->i2c);
+    (*gyro)->i2c.addr = FXAS21002C_ADDRESS;
+    (*gyro)->i2c.clk_speed = I2C_MASTER_FAST_FREQ_HZ;
+    (*gyro)->i2c.mode =I2C_MODE_TYPE_MASTER;
+    (*gyro)->i2c.tx_buff_len = GYRO_BUFF_SIZE;
+    (*gyro)->i2c.rx_buff_len = GYRO_BUFF_SIZE;
+    ret = i2c_utils_setup((*gyro)->i2c);
     if(ret != I2C_SUCCESS)
         return GYRO_BUS_FAIL;
 
     /* Clear raw data */
-    gyro->raw.x = 0;
-    gyro->raw.y = 0;
-    gyro->raw.z = 0;
+    (*gyro)->raw.x = 0;
+    (*gyro)->raw.y = 0;
+    (*gyro)->raw.z = 0;
 
     /* Check device ID */
-    ret = i2c_utils_read(gyro->i2c, GYRO_REGISTER_WHO_AM_I, data_rd, 8);
+    ret = i2c_utils_read((*gyro)->i2c, GYRO_REGISTER_WHO_AM_I, data_rd, 8);
     if(data_rd[0] != FXAS21002C_ID)
         return GYRO_ID_FAIL;
     
     /* Setup the gyro range */
-    gyro->range = GYRO_RANGE;
+    (*gyro)->range = GYRO_RANGE;
     uint8_t ctrlReg0 = 0x00;
-    switch(gyro->range)
+    switch((*gyro)->range)
     {
         case GYRO_RANGE_250DPS:
         ctrlReg0 = 0x03;
@@ -45,18 +49,18 @@ gyro_err_t gyro_init(gyro_t* gyro){
 
     data_wr[0] = GYRO_REGISTER_CTRL_REG1;
     data_wr[1] = 0x00;
-    ret = i2c_utils_write(gyro->i2c, data_wr, 2);
+    ret = i2c_utils_write((*gyro)->i2c, data_wr, 2);
 
     data_wr[1] = (1 << 6);
-    ret = i2c_utils_write(gyro->i2c, data_wr, 2);
+    ret = i2c_utils_write((*gyro)->i2c, data_wr, 2);
 
     data_wr[0] = GYRO_REGISTER_CTRL_REG0;
     data_wr[1] = ctrlReg0;
-    ret = i2c_utils_write(gyro->i2c, data_wr, 2);
+    ret = i2c_utils_write((*gyro)->i2c, data_wr, 2);
 
     data_wr[0] = GYRO_REGISTER_CTRL_REG1;
     data_wr[1] = 0x0E;
-    ret = i2c_utils_write(gyro->i2c, data_wr, 2);
+    ret = i2c_utils_write((*gyro)->i2c, data_wr, 2);
     
     free(data_rd);
     free(data_wr);
@@ -66,6 +70,9 @@ gyro_err_t gyro_init(gyro_t* gyro){
 }
 
 gyro_err_t gyro_update(gyro_t *gyro){
+    if(!gyro) {
+        return GYRO_NMALLOC;
+    }
 
     i2c_err_t ret;
     uint8_t* data_rd = (uint8_t*)malloc(sizeof(uint8_t)*GYRO_BUFF_SIZE);
@@ -128,4 +135,14 @@ gyro_err_t gyro_update(gyro_t *gyro){
     free(data_wr);
 
     return GYRO_SUCCESS;
+}
+
+gyro_err_t gyro_destroy(gyro_t **gyro){
+    if(gyro){
+        free(*gyro);
+        *gyro = NULL;
+        return GYRO_SUCCESS;
+    } else {
+        return GYRO_NMALLOC;
+    }
 }

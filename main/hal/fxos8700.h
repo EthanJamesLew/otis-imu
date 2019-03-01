@@ -109,33 +109,33 @@ typedef enum {
     ACCEL_SUCCESS = 0x0,
     ACCEL_BUS_FAIL = 0x1,
     ACCEL_ID_FAIL = 0x2,
+    ACCEL_NMALLOC = 0x3,
 } accel_err_t;
 
 typedef enum {
     MAGN_SUCCESS = 0x0,
     MAGN_BUS_FAIL = 0x1,
     MAGN_ID_FAIL = 0x2,
+    MAGN_NMALLOC = 0x3,
 } magn_err_t;
 
 typedef enum {
     FXOS8700_SUCCESS = 0x0,
     FXOS8700_BUS_FAIL = 0x1,
     FXOS8700_ID_FAIL = 0x2,
+    FXOS8700_NMALLOC = 0x3
 } fxos8700_err_t;
 
-static fxos8700_t* fxos8700; 
-static timer_hal_t* fxos_timer;
-
-accel_err_t accel_init(accel_t *accel);
+accel_err_t accel_init(accel_t **accel);
 
 accel_err_t accel_update(accel_t *accel);
 
-magn_err_t magn_init(magn_t *magn);
+accel_err_t accel_destroy(accel_t **accel);
+
+magn_err_t magn_init(magn_t **magn);
 
 magn_err_t magn_update(magn_t *magn);
 
-static fxos8700_err_t fxos8700_init(fxos8700_t *fxos);
-
-static fxos8700_err_t fxos8700_update(fxos8700_t *fxos);
+magn_err_t magn_destroy(magn_t **magn);
 
 #endif

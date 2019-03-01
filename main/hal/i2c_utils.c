@@ -99,7 +99,7 @@ i2c_err_t i2c_utils_read(i2c_peripheral_t i2c_dev, uint8_t i2c_reg, uint8_t *dat
     /* Add stop bit */
     i2c_master_stop(cmd);
     /* Start the transmission */
-    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 500 / portTICK_RATE_MS);
     /* delete the link */
     i2c_cmd_link_delete(cmd);
 
@@ -137,7 +137,7 @@ i2c_err_t i2c_utils_write(i2c_peripheral_t i2c_dev, uint8_t *data_wr, size_t siz
     i2c_master_write_byte(cmd, (i2c_dev.addr << 1) | WRITE_BIT, ACK_CHECK_EN);
     i2c_master_write(cmd, data_wr, size, ACK_CHECK_EN);
     i2c_master_stop(cmd);
-    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 1000 / portTICK_RATE_MS);
+    ret = i2c_master_cmd_begin(I2C_MASTER_NUM, cmd, 500 / portTICK_RATE_MS);
     i2c_cmd_link_delete(cmd);
 
     /* Interpret output */

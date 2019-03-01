@@ -88,12 +88,15 @@ typedef enum {
     GYRO_SUCCESS = 0x0,
     GYRO_ID_FAIL = 0x1,   
     GYRO_BUS_FAIL = 0x2, 
+    GYRO_NMALLOC = 0x3,
 } gyro_err_t;
 
 
-gyro_err_t gyro_init(gyro_t* gyro);
+gyro_err_t gyro_init(gyro_t **gyro);
 
 gyro_err_t gyro_update(gyro_t *gyro);
+
+gyro_err_t gyro_destroy(gyro_t **gyro);
 
 
 #endif
