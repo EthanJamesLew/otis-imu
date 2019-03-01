@@ -6,6 +6,8 @@
 PROJECT_NAME := otis-imu
 
 EXTRA_COMPONENT_DIRS = main/hal
+EXTRA_COMPONENT_DIRS += main/filter
 
 include $(IDF_PATH)/make/project.mk
+
 

@@ -12,6 +12,7 @@
 
 #include <stdlib.h>
 #include "i2c_utils.h"
+#include "../sensors.h"
 
 /* 7-bit address for this sensor */
 #define FXAS21002C_ADDRESS       (0x21)       // 0100001
@@ -59,22 +60,6 @@ typedef enum {
     GYRO_RANGE_2000DPS = 2000     /**< 2000dps */
 } gyro_range_t;
 
-
-/*!
-    Struct to store a single raw (integer-based) gyroscope vector
-*/
-typedef struct gyro_int_data_s {
-      int16_t x;    /**< Raw int16_t value for the x axis */
-      int16_t y;    /**< Raw int16_t value for the y axis */
-      int16_t z;    /**< Raw int16_t value for the z axis */
-} gyro_int_data_t;
-
-typedef struct gyro_float_data_s {
-      float x;    /**< Raw int16_t value for the x axis */
-      float y;    /**< Raw int16_t value for the y axis */
-      float z;    /**< Raw int16_t value for the z axis */
-} gyro_float_data_t;
-
 typedef struct gyro_s {
     gyro_int_data_t raw;
     gyro_float_data_t converted;
@@ -82,15 +67,6 @@ typedef struct gyro_s {
     int32_t id;
     i2c_peripheral_t i2c;
 } gyro_t;
-
-
-typedef enum {
-    GYRO_SUCCESS = 0x0,
-    GYRO_ID_FAIL = 0x1,   
-    GYRO_BUS_FAIL = 0x2, 
-    GYRO_NMALLOC = 0x3,
-} gyro_err_t;
-
 
 gyro_err_t gyro_init(gyro_t **gyro);
 

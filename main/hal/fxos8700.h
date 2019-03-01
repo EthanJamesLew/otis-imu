@@ -11,6 +11,7 @@
 
 #include "i2c_utils.h"
 #include "time_utils.h"
+#include "../sensors.h"
 
 /** 7-bit I2C address for this sensor */
 #define FXOS8700_ADDRESS           (0x1F)     // 0011111
@@ -67,22 +68,6 @@ typedef enum
     ACCEL_RANGE_8G                    = 0x02  /**< +/- 8g range */
 } fxos8700AccelRange_t;
 
-
-/*!
-    Struct to store a single raw (integer-based) gyroscope vector
-*/
-typedef struct raw_int_data_s {
-      int16_t x;    /**< Raw int16_t value for the x axis */
-      int16_t y;    /**< Raw int16_t value for the y axis */
-      int16_t z;    /**< Raw int16_t value for the z axis */
-} raw_int_data_t;
-
-typedef struct raw_float_data_s {
-      float x;    /**< Raw int16_t value for the x axis */
-      float y;    /**< Raw int16_t value for the y axis */
-      float z;    /**< Raw int16_t value for the z axis */
-} raw_float_data_t;
-
 typedef struct fxos8700_s {
     raw_int_data_t a_raw;
     raw_float_data_t a_converted;
@@ -104,20 +89,6 @@ typedef struct magn_s {
     raw_int_data_t raw;
     raw_float_data_t converted;
 } magn_t;
-
-typedef enum {
-    ACCEL_SUCCESS = 0x0,
-    ACCEL_BUS_FAIL = 0x1,
-    ACCEL_ID_FAIL = 0x2,
-    ACCEL_NMALLOC = 0x3,
-} accel_err_t;
-
-typedef enum {
-    MAGN_SUCCESS = 0x0,
-    MAGN_BUS_FAIL = 0x1,
-    MAGN_ID_FAIL = 0x2,
-    MAGN_NMALLOC = 0x3,
-} magn_err_t;
 
 typedef enum {
     FXOS8700_SUCCESS = 0x0,
