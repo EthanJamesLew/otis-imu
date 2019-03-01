@@ -8,8 +8,6 @@
 #include "hal/fxos8700.h"
 #include "hal/time_utils.h"
 
-#define SENSOR_BUFF_SIZE 1
-#define GYRO_REGISTER_WHO_AM_I 0x0C
 #define SAMPLE_PERIOD 10
 
 static void gyro_test_task(void *arg)
